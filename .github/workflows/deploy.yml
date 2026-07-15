@@ -25,4 +25,4 @@ jobs:
       # Executes the live deployment to the target environment
       - name: Deploy to salesforce
         run: |
-          sfdx force:source:deploy -p force-app -u Project1  --wait 30
+          sfdx force:source:deploy -p force-app -u Project1

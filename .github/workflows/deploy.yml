@@ -7,22 +7,23 @@ on:
       - 'force-app/**'
 
 jobs:
-  deploy:
+  deploy-metadata:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout Code
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
       - name: Install Salesforce CLI
         run: npm install -g @salesforce/cli
 
-      - name: Authenticate to Salesforce
+      - name: Authenticate to Target Org
         run: |
-          echo "${{ secrets.SFDX_AUTH_URL }}" > sfdx_auth_url.txt
-          sfdx auth: sfdxurl:store -f sfdx_auth_url.txt -a Project1
+          echo "${{ secrets.SFDX_AUTH_URL }}" > ./auth_url.txt
+          sf org login auth sfdx-url --sfdx-url-file ./auth_url.txt --set-default
+          rm ./auth_url.txt -a Project1
 
       # Executes the live deployment to the target environment
-      - name: Deploy to salesforce
+      - name: Deploy Metadata
         run: |
-          sfdx force:source:deploy -p force-app -u Project1
+          sf project deploy start --source-dir force-app -u Project1 --wait 30

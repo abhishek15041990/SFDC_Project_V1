@@ -1,0 +1,28 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'force-app/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Authenticate to Salesforce
+        run: |
+          echo "${{ secrets.SFDX_AUTH_URL }}" > sfdx_auth_url.txt
+          sfdx auth: sfdxurl:store -f sfdx_auth_url.txt -a Project1
+
+      # Executes the live deployment to the target environment
+      - name: Deploy to salesforce
+        run: |
+          sfdx force:source:deploy -p force-app -u Project1  --wait 30
